@@ -17,6 +17,13 @@ begin
 	using PrettyTables
 end
 
+# ╔═╡ 87d6fe0a-af8a-4c13-b932-923032ee47f4
+md"### Setup"
+
+# ╔═╡ 85a0d3aa-e364-4b93-af05-cfd9672a7fde
+md"""### Download Data
+Data are hosted on OSF in a zip file. I have to download it, unzip it + read only one of the ~70 files"""
+
 # ╔═╡ 82207dad-43d8-48c7-800f-9942410930fd
 begin
 	# download the zip
@@ -34,6 +41,9 @@ begin
 	#d= UrlDownload.urldownload("https://static-content.springer.com/esm/art%3A10.1038%2Fs41562-022-01458-9/MediaObjects/41562_2022_1458_MOESM4_ESM.csv") |> DataFrame;
 end;
 
+# ╔═╡ 7e0e5933-5818-4c43-bd1d-284f19a39eff
+md"""### Model without Lab"""
+
 # ╔═╡ 21c5eea7-97f6-40c6-80a9-62499c33ece1
 m_simple = fit(LinearMixedModel,
 	@formula(happiness~trial*image*condition+(1|ResponseId)),
@@ -42,6 +52,9 @@ m_simple = fit(LinearMixedModel,
 		:image=>DummyCoding(base="absentt"),
 	:condition=>DummyCoding(base="mimicry"))
 )
+
+# ╔═╡ 3ac97a12-b816-4426-91e2-0ea0296b1bd2
+md"""### Model **with** Lab"""
 
 # ╔═╡ 6c2d91b2-0283-48ff-8d27-e47f9f8b5bca
 # ╠═╡ show_logs = false
@@ -56,8 +69,13 @@ m_full = fit(LinearMixedModel,
 	:condition=>DummyCoding(base="mimicry"))
 )
 
-# ╔═╡ e508e825-fe2e-496d-9755-d303f856fff8
-coeftable(m_full)|>DataFrame
+# ╔═╡ ac64a957-92a2-4ec1-bb9b-396693caa5c9
+md"""### Let's compare"""
+
+# ╔═╡ 0a702720-9a56-4bc6-9959-511aa64ab518
+md"""
+The models seem pretty similar (columns with "`_1`" are for the full model), but as expected the full model is more conservative in its p-values. Some of the parameters are no longer significant, but they do not matter in this case, the main results hold up
+"""
 
 # ╔═╡ 11355af7-d3de-4266-94ab-480540cf9505
 begin
@@ -71,6 +89,15 @@ res_combine = DataFramesMeta.outerjoin(res_simple,res_full;on=:Name,makeunique=t
 
 	
 end
+
+# ╔═╡ 29daad1a-14e1-400d-b496-9f0bbe2698df
+md"## Check if model might be singular"
+
+# ╔═╡ 6b9ac47d-06b2-4102-9a88-f118b8736b77
+MixedModels.rePCA(m_full)
+
+# ╔═╡ e85c2361-0d49-4be8-8a75-2b0e95193f70
+md"Indeed, the Lab random effects structure could be easily simplified to improve the fit"
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -898,11 +925,19 @@ version = "17.4.0+0"
 """
 
 # ╔═╡ Cell order:
+# ╟─87d6fe0a-af8a-4c13-b932-923032ee47f4
 # ╠═94049484-5122-11ed-04eb-8b3d9eca8492
+# ╟─85a0d3aa-e364-4b93-af05-cfd9672a7fde
 # ╠═82207dad-43d8-48c7-800f-9942410930fd
+# ╟─7e0e5933-5818-4c43-bd1d-284f19a39eff
 # ╠═21c5eea7-97f6-40c6-80a9-62499c33ece1
+# ╟─3ac97a12-b816-4426-91e2-0ea0296b1bd2
 # ╠═6c2d91b2-0283-48ff-8d27-e47f9f8b5bca
-# ╠═e508e825-fe2e-496d-9755-d303f856fff8
+# ╟─ac64a957-92a2-4ec1-bb9b-396693caa5c9
+# ╟─0a702720-9a56-4bc6-9959-511aa64ab518
 # ╠═11355af7-d3de-4266-94ab-480540cf9505
+# ╟─29daad1a-14e1-400d-b496-9f0bbe2698df
+# ╠═6b9ac47d-06b2-4102-9a88-f118b8736b77
+# ╟─e85c2361-0d49-4be8-8a75-2b0e95193f70
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
